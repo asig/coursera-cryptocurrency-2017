@@ -5,23 +5,39 @@
 // mixing them in the network to fully test.
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.HashMap;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class Simulation {
 
-   public static void main(String[] args) {
+   public static void main(String ... args) {
+      for (String pGraph : new String[] {".1", ".2", ".3"}) {
+         for (String pMalicious : new String[] {".15", ".30", ".45"}) {
+            for (String pTxDist : new String[] {".01", ".05", ".10"}) {
+               for (String numRound : new String[] {"10", "20"}) {
+                  _main(new String[] {pGraph, pMalicious, pTxDist, numRound});
+               }
+            }
+         }
+      }
+   }
+   public static void _main(String[] args) {
 
       // There are four required command line arguments: p_graph (.1, .2, .3),
-      // p_malicious (.15, .30, .45), p_txDistribution (.01, .05, .10), 
+      // p_malicious (.15, .30, .45), p_txDistribution (.01, .05, .10),
       // and numRounds (10, 20). You should try to test your CompliantNode
       // code for all 3x3x3x2 = 54 combinations.
 
       int numNodes = 100;
       double p_graph = Double.parseDouble(args[0]); // parameter for random graph: prob. that an edge will exist
       double p_malicious = Double.parseDouble(args[1]); // prob. that a node will be set to be malicious
-      double p_txDistribution = Double.parseDouble(args[2]); // probability of assigning an initial transaction to each node 
+      double p_txDistribution = Double.parseDouble(args[2]); // probability of assigning an initial transaction to each node
       int numRounds = Integer.parseInt(args[3]); // number of simulation rounds your nodes will run for
 
       // pick which nodes are malicious and which are compliant
@@ -30,7 +46,7 @@ public class Simulation {
          if(Math.random() < p_malicious)
             // When you are ready to try testing with malicious nodes, replace the
             // instantiation below with an instantiation of a MaliciousNode
-            nodes[i] = new MalDoNothing(p_graph, p_malicious, p_txDistribution, numRounds);
+            nodes[i] = new MaliciousNode(p_graph, p_malicious, p_txDistribution, numRounds);
          else
             nodes[i] = new CompliantNode(p_graph, p_malicious, p_txDistribution, numRounds);
       }
@@ -96,7 +112,7 @@ public class Simulation {
                 	  Set<Candidate> candidates = new HashSet<>();
                 	  allProposals.put(j, candidates);
                   }
-                  
+
                   Candidate candidate = new Candidate(tx, i);
                   allProposals.get(j).add(candidate);
                }
@@ -112,15 +128,22 @@ public class Simulation {
       }
 
       // print results
+      Set<String> seen = new HashSet<>();
       for (int i = 0; i < numNodes; i++) {
          Set<Transaction> transactions = nodes[i].sendToFollowers();
-         System.out.println("Transaction ids that Node " + i + " believes consensus on:");
-         for (Transaction tx : transactions)
-            System.out.println(tx.id);
-         System.out.println();
-         System.out.println();
+         String ids = joinIds(transactions);
+         seen.add(ids);
+         System.out.println(String.format("Transaction ids that Node %03d believes consensus on: (%03d) %s", i, transactions.size(), joinIds(transactions)));
       }
+      System.out.println("ID-Sets seen:");
+      int i = 0;
+      for (String ids : seen) {
+         System.out.println(String.format("Set %03d: %s", i++, ids));
+      }
+   }
 
+   private static String joinIds(Set<Transaction> tx) {
+      return tx.stream().map(trx -> String.format("%08x", trx.id)).sorted().collect(joining(", "));
    }
 
 
