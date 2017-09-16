@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/assignment1/assignment1.iml" filepath="$PROJECT_DIR$/assignment1/assignment1.iml" />
       <module fileurl="file://$PROJECT_DIR$/assignment2/assignment2.iml" filepath="$PROJECT_DIR$/assignment2/assignment2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assignment3/assignment3.iml" filepath="$PROJECT_DIR$/assignment3/assignment3.iml" />
       <module fileurl="file://$PROJECT_DIR$/coursera-cryptocurrency-2017.iml" filepath="$PROJECT_DIR$/coursera-cryptocurrency-2017.iml" />
     </modules>
   </component>
